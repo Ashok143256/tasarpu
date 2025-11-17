@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Admin users for the cooperative management system
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("staff") // staff, manager, admin
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// Announcements/News module for public communication
+model Announcement {
+  id          String   @id @default(cuid())
+  titleNe     String   // Nepali title
+  titleEn     String   // English title
+  contentNe   String   // Nepali content
+  contentEn   String   // English content
+  excerptNe   String?  // Nepali excerpt
+  excerptEn   String?  // English excerpt
+  category    String   // Training, Finance, Seeds, Meeting, General
+  status      String   @default("draft") // draft, published
+  isFeatured  Boolean  @default(false)
+  author      String   // Author name
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("announcements")
+}
+
+// Training Events module for agricultural training programs
+model TrainingEvent {
+  id          String   @id @default(cuid())
+  titleNe     String   // Nepali title
+  titleEn     String   // English title
+  descriptionNe String // Nepali description
+  descriptionEn String // English description
+  date        DateTime // Event date
+  time        String   // Event time (e.g., "10:00 AM - 4:00 PM")
+  locationNe  String   // Nepali location
+  locationEn  String   // English location
+  topic       String   // Training topic
+  instructor  String   // Instructor name
+  maxParticipants Int?  // Maximum participants
+  currentParticipants Int @default(0)
+  status      String   @default("upcoming") // upcoming, ongoing, completed, cancelled
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("training_events")
+}
+
+// Contact Inquiries module for public contact form submissions
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String   // Contact person name
+  email     String   // Contact person email
+  phone     String?  // Contact person phone
+  subject   String   // Inquiry subject
+  message   String   // Detailed message
+  status    String   @default("pending") // pending, read, responded, closed
+  priority  String   @default("normal") // low, normal, high, urgent
+  notes     String?  // Admin notes for internal use
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("inquiries")
+}
